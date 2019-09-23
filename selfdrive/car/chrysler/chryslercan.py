@@ -2,7 +2,6 @@ from cereal import car
 
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
-AudibleAlert = car.CarControl.HUDControl.AudibleAlert
 
 def calc_checksum(data):
   """This function does not want the checksum byte in the input data.
@@ -12,8 +11,8 @@ def calc_checksum(data):
   end_index = len(data)
   index = 0
   checksum = 0xFF
-  temp_chk = 0;
-  bit_sum = 0;
+  temp_chk = 0
+  bit_sum = 0
   if(end_index <= index):
     return False
   for index in range(0, end_index):
@@ -22,7 +21,7 @@ def calc_checksum(data):
     iterate = 8
     while(iterate > 0):
       iterate -= 1
-      bit_sum = curr & shift;
+      bit_sum = curr & shift
       temp_chk = checksum & 0x80
       if (bit_sum != 0):
         bit_sum = 0x1C
@@ -44,12 +43,6 @@ def calc_checksum(data):
 def make_can_msg(addr, dat):
   return [addr, 0, dat, 0]
 
-def create_lkas_heartbit(packer, lkas_status_ok):
-  # LKAS_HEARTBIT 0x2d9 (729) Lane-keeping heartbeat.
-  values = {
-    "LKAS_STATUS_OK": lkas_status_ok
-  }
-  return packer.make_can_msg("LKAS_HEARTBIT", 0, values)
 
 def create_lkas_hud(packer, gear, lkas_active, hud_alert, hud_count, lkas_car_model):
   # LKAS_HUD 0x2a6 (678) Controls what lane-keeping icon is displayed.
@@ -98,15 +91,6 @@ def create_lkas_command(packer, apply_steer, moving_fast, frame):
 
   values["CHECKSUM"] = checksum
   return packer.make_can_msg("LKAS_COMMAND", 0, values)
-
-
-def create_chimes(audible_alert):
-  # '0050' nothing, chime '4f55'
-  if audible_alert == AudibleAlert.none:
-    msg = '0050'.decode('hex')
-  else:
-    msg = '4f55'.decode('hex')
-  return make_can_msg(0x339, msg)
 
 
 def create_wheel_buttons(frame):
